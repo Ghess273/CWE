@@ -9,12 +9,8 @@ import java.util.Scanner;
 import java.util.HashMap;
 
 public class Driver {
-<<<<<<< HEAD
-
-=======
     // File path to get history
     private static final String flashCardSetsFileName = "flashcardsets.ser";
->>>>>>> 5dc285c7aa64c67dc6bd7ac699e5a8ae525f3207
     // A list of topics the user can choose from
     static HashMap<String, Integer> topics = new HashMap<>();
     // An ArrayList of all flashcard sets
@@ -284,18 +280,10 @@ public class Driver {
         FileOutputStream outStream = null;
         ObjectOutputStream objStream = null;
         try {
-<<<<<<< HEAD
-            // outStream = new FileOutputStream(historyFileName);
-            objStream = new ObjectOutputStream(outStream);
-            // objStream.writeObject(history);
-
-        } catch (IOException e) {
-=======
             outStream = new FileOutputStream(flashCardSetsFileName);
             objStream = new ObjectOutputStream(outStream);
             objStream.writeObject(sets);
         } catch (IOException e) { 
->>>>>>> 5dc285c7aa64c67dc6bd7ac699e5a8ae525f3207
             System.err.println("Error: " + e.getMessage());
         } finally {
             try {
@@ -308,8 +296,6 @@ public class Driver {
         System.out.println("Finished");
     }
 
-<<<<<<< HEAD
-=======
     /**
      * Gets the history from the history.ser file
      * 
@@ -340,5 +326,4 @@ public class Driver {
             topics.put(topic, i);
         }
     }
->>>>>>> 5dc285c7aa64c67dc6bd7ac699e5a8ae525f3207
 }
