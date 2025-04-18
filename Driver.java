@@ -7,10 +7,10 @@ import java.util.Scanner;
 import java.util.HashMap;
 
 public class Driver {
-  
+
     // A list of topics the user can choose from
-    static HashMap<String, Integer> topics = new HashMap<>(); 
-    // An ArrayList of all flashcard sets 
+    static HashMap<String, Integer> topics = new HashMap<>();
+    // An ArrayList of all flashcard sets
     static ArrayList<FlashCardSet> sets = new ArrayList<>();
     // a list of allowed inputs
     private static ArrayList<String> allowedInputs = new ArrayList<String>(Arrays.asList("1", "2", "3", "4", "5"));
@@ -40,7 +40,7 @@ public class Driver {
         System.out.println("--------------------");
         System.out.println("1. Retrieve a file of flashcards.");
         System.out.println("2. Flashcard quiz.");
-        System.out.println("3. Create a new flashcard file.");
+        System.out.println("3. Create a new flashcard set.");
         System.out.println("4. Add a new flashcard to the pile.");
         System.out.println("5. Quit");
         System.out.println("--------------------");
@@ -89,7 +89,7 @@ public class Driver {
                 quiz();
                 break;
             case 3:
-                createNewFlashCardFile();
+                createNewFlashCardSet();
                 break;
             case 4:
                 addNewFlashCard();
@@ -98,54 +98,49 @@ public class Driver {
                 quit();
                 break;
             case 6:
-                
+
             default:
                 break;
         }
     }
 
-    private static void retrieveFile()
-    {
+    private static void retrieveFile() {
         System.out.println("retrieving file...");
     }
 
-    private static void quiz()
-    {
+    private static void quiz() {
         FlashCardSet set;
         String userInput;
 
         // Prompt User to Select Topic
-        if(sets == null || sets.isEmpty())
-        {
+        if (sets == null || sets.isEmpty()) {
             // No Topics to choose from
             System.out.println("No Flash Card Topics to Choose From");
             return;
         }
-        
+
         System.out.println("Select from the following topics: ");
         // Print out topics the user can choose from
-        for(int i = 0; i < sets.size(); i++)
-        {
+        for (int i = 0; i < sets.size(); i++) {
             System.out.println(sets.get(i).getTopic());
         }
         System.out.print("Enter desired topic: ");
         userInput = scan.nextLine();
 
         // Check if topic is a valid option
-        if(topics.containsKey(userInput))
+        if (topics.containsKey(userInput))
             set = sets.get(topics.get(userInput));
-        else{
+        else {
             System.out.println("Invalid Topic");
             return;
         }
 
         // Quiz user on all the flashcards in the set
-        for(int i = 0; i < set.getNumOfCards(); i++)
-        {
+        for (int i = 0; i < set.getNumOfCards(); i++) {
             FlashCard currCard = set.getCard(i);
 
             // Compliant with CWE-252, check return value for null
-            if(currCard == null)
+            if (currCard == null)
                 return;
 
             // Display Term
@@ -156,17 +151,16 @@ public class Driver {
             userInput = scan.nextLine();
 
             // Check user's anwser
-            if(userInput.equalsIgnoreCase(currCard.getDef()))
+            if (userInput.equalsIgnoreCase(currCard.getDef()))
                 System.out.println("Correct!");
-            else
-            {
+            else {
                 System.out.println("Incorrect");
-                System.out.println("Correct Defintion is : " + currCard.getDef());
+                System.out.println("Correct Definition is : " + currCard.getDef());
             }
         }
     }
 
-    private static void createNewFlashCardFile(){
+    private static void createNewFlashCardSet(){
 
         // get and validate topic name
         System.out.println("Enter new topic name:");
@@ -185,15 +179,31 @@ public class Driver {
         }
 
         //create new flashcard and add to set
-        FlashCardSet newSet = new FlashCardSet(topicName, null);
+        FlashCardSet newSet = new FlashCardSet(topicName, new ArrayList<FlashCard>());
         sets.add(newSet);
+        topics.put(topicName, sets.size() - 1);
 
-        // get valid user input
-        String term = getValidFlashcardTextFromUser("Enter term side:");
-        String definition = getValidFlashcardTextFromUser("Enter definition side");
-        
-        // TODO:: create flashcard, add it to deck, give them an option to quit
-    
+        System.out.println("Enter \"q\" to quit");
+
+        while(true) {
+            
+            // get valid user input
+            String term = getValidFlashcardTextFromUser("Enter term side:");
+            if(term.equals("q")) {
+                break;
+            }
+
+            String definition = getValidFlashcardTextFromUser("Enter definition side");
+            if(definition.equals("q")) {
+                break;
+            }
+
+            newSet.addCard(new FlashCard(term, definition));
+            System.out.println("Flashcard added\n");
+
+        }
+
+        System.out.println("New flashcard set created!\n");
 
     }
 
@@ -203,13 +213,13 @@ public class Driver {
         String userInput = "";
         while (true) {
             userInput = scan.nextLine().trim();
-    
             // Check if input is valid
             // The Topic must be an alphanumeric between one and twenty characters
             if (userInput.matches("^.{1,200}$")) {
                 break; // valid input
             } else {
-                System.out.println("Invalid input. Card side must be between 1 and 200 characters and cannot contain any newlines");
+                System.out.println(
+                        "Invalid input. Card side must be between 1 and 200 characters and cannot contain any newlines");
             }
         }
 
@@ -217,7 +227,7 @@ public class Driver {
 
     }
 
-    private static void addNewFlashCard(){
+    private static void addNewFlashCard() {
         FlashCardSet set = null;
         String userInput;
         String term;
@@ -227,17 +237,16 @@ public class Driver {
 
         System.out.println("Select which topic to add to from the following topics or create a new topic: ");
         // Print out topics the user can choose from
-        for(int i = 0; i < sets.size(); i++)
-        {
+        for (int i = 0; i < sets.size(); i++) {
             System.out.println(sets.get(i).getTopic());
         }
         System.out.print("Enter desired topic or a new topic: ");
         userInput = scan.nextLine();
 
         // Check if topic is a valid option
-        if(topics.containsKey(userInput))
+        if (topics.containsKey(userInput))
             set = sets.get(topics.get(userInput));
-        else{
+        else {
             // Else, create a new topic
             topic = userInput;
         }
@@ -249,42 +258,37 @@ public class Driver {
         defintion = getValidFlashcardTextFromUser("Enter Definition");
 
         // Add FlashCard to either Existing Set or a new Set
-        if(set != null)
-        {
+        if (set != null) {
             set.addCard(new FlashCard(term, defintion));
-        }
-        else
-        {
+        } else {
             cards.add(new FlashCard(term, defintion));
             sets.add(new FlashCardSet(topic, cards));
             topics.put(topic, sets.size() - 1);
         }
     }
 
-    private static void quit(){
+    private static void quit() {
         System.out.println("Saving...\n");
-                // save history to file and then exit
-                // serialize obj and write to file
-                FileOutputStream outStream = null;
-                ObjectOutputStream objStream = null;
-                try {
-                    // outStream = new FileOutputStream(historyFileName);
-                    objStream = new ObjectOutputStream(outStream);
-                    // objStream.writeObject(history);
+        // save history to file and then exit
+        // serialize obj and write to file
+        FileOutputStream outStream = null;
+        ObjectOutputStream objStream = null;
+        try {
+            // outStream = new FileOutputStream(historyFileName);
+            objStream = new ObjectOutputStream(outStream);
+            // objStream.writeObject(history);
 
-                } catch (IOException e) { 
-                    System.err.println("Error: " + e.getMessage());
-                } finally {
-                    try {
-                        if (objStream != null)
-                            objStream.close();
-                    } catch (IOException e) {
-                        System.err.println("Error saving to file: " + e);
-                    }
-                }
-                System.out.println("Finished");
+        } catch (IOException e) {
+            System.err.println("Error: " + e.getMessage());
+        } finally {
+            try {
+                if (objStream != null)
+                    objStream.close();
+            } catch (IOException e) {
+                System.err.println("Error saving to file: " + e);
+            }
+        }
+        System.out.println("Finished");
     }
-
-    
 
 }
